@@ -1,0 +1,18 @@
+In PA2, we pick five production of William Shakespeare， which are:
+  THE SONNETS : pg1041.txt
+  THE TRAGEDY OF JULIUS CAESAR : pg1120.txt
+  A Midsommer Nights Dreame : pg2242.txt
+  The Merchant of Venice : pg2243.txt
+  The Tragedie of Hamlet : pg2265.txt
+
+1. building stop word list
+  In this part, we run a simple map-reduce of word count,
+  mapper : mapper0.py
+  reducer : reducer0.py
+  a. we put the text files in /tmp/data, set output directory to /tmp/out0, running with cmd
+    hadoop jar ${HADOOP_HOME}/share/hadoop/tools/lib/hadoop-streaming-2.7.1.jar -files mapper0.py,reducer0.py -mapper "mapper0.py" -reducer "reducer0.py" -input /tmp/data/* -output /tmp/out0
+  b. After grabbing the result, we rename it to out0.txt, which is also provided.
+  c. Then use script genStopWords.py which takes out0.txt as input and output stop words to stops.txt,
+     for identify stop words, we pick 5 times the average frequency as threshold
+
+    hadoop jar ${HADOOP_HOME}/share/hadoop/tools/lib/hadoop-streaming-2.7.1.jar -files mapper.py,reducer.py,stops.txt -mapper "mapper.py" -reducer "reducer.py" -input /tmp/data/* -output /tmp/out
