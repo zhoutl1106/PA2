@@ -16,9 +16,11 @@ def grabAWord(word):
             if word == tempList[0]:
                 return tempList[1]
 
-def grabConsecutiveWords(words):
+def grabConsecutiveWords(words1):
     # remove the leading logical and/or/not
+    words = words1[:]
     words.pop(0)
+    # print("conse ", words)
     listOfPoss = []
     # query each word in word group
     for word in words:
@@ -44,6 +46,35 @@ def grabConsecutiveWords(words):
             ret.append(e)
     return ret
 
+def andList(a_list, b_list):
+    ret_list = []
+    for e in a_list:
+        filename, start, line, offset = e.split('_')
+        for g in b_list:
+            filename1, start1, line1, offset1 = g.split('_')
+            if filename1 == filename and start1 == start and line1 == line and offset1 != offset:
+                ret_list.append(e)
+
+    # print ("andList : ", a_list, b_list, ret_list)
+    return ret_list
+
+def orList(a,b):
+    ret_list = list(set(a).union(set(b)))
+    # print ("orList : ", a, b, ret_list)
+    return ret_list
+
+def notList(a_list, b_list):
+    ret_list = a_list[:]
+    for e in a_list:
+        filename, start, line, offset = e.split('_')
+        for g in b_list:
+            filename1, start1, line1, offset1 = g.split('_')
+            if filename1 == filename and start1 == start and line1 == line:
+                ret_list.remove(e)
+    # print ("notList : ", a_list, b_list, ret_list)
+    return ret_list
+
+
 def process(word):
     filestop = open('./stops.txt','rt')
     stopList = filestop.readline().strip().split()
@@ -58,7 +89,7 @@ def process(word):
     tempBuildQueryList = []
     while i < len(allquery):
         if i == 0:
-            temp = ["and"]
+            temp = ["or"]
         if (allquery[i] != "and") and (allquery[i] != "not") and (allquery[i] != "or"):
             temp.append(allquery[i])
         else:
@@ -66,6 +97,7 @@ def process(word):
             temp = [allquery[i]]
         i = i + 1
     pairedAllQuery.append(temp)
+    # print("all query ", pairedAllQuery)
 
     for pair in pairedAllQuery:
         for i in range(1, len(pair)):
@@ -93,31 +125,51 @@ def process(word):
         temp = temp + value
 
     # query each word
+    queryResult = []
     for pair in pairedAllQuery:
-        ret = ret + "<h1>"+pair[0].upper() + "&nbsp,&nbsp"
+        tempWord = ""
         for i in range(1, len(pair)):
-            ret = ret + pair[i] + " "
-        ret = ret +"</h1> "
+            tempWord = tempWord + pair[i] + " "
         if len(pair) == 2:
             listLoc = grabAWord(pair[1])
-            if len(listLoc) == 0:
-                ret = ret + "not exist"
-            else:
-                ret = ret + '<table style="width:100%"<tr><th>Filename</th><th>Line Num</th><th>Inline offset</th></tr>'
-                for pos in listLoc:
-                    filename, start, line, offset = pos.split('_')
-                    realLine = int(line) + int(aggregateDic[start])
-                    ret = ret + '<tr><th>' + filename + "</th><th>" +str(realLine) + "</th><th>" + offset+"</th></tr>"
-                ret = ret + '</table>'
         else:
             listLoc = grabConsecutiveWords(pair)
-            if len(listLoc) == 0:
-                ret = ret + "not exist"
-            else:
-                ret = ret + '<table style="width:100%"<tr><th>Filename</th><th>Line Num</th><th>Inline offset</th></tr>'
-                for pos in listLoc:
-                    filename, start, line, offset = pos.split('_')
-                    realLine = int(line) + int(aggregateDic[start])
-                    ret = ret + '<tr><th>' + filename + "</th><th>" +str(realLine) + "</th><th>" + offset+"</th></tr>"
-                ret = ret + '</table>'
+        queryResult.append([tempWord, pair[0], listLoc])
+
+    # process logical
+
+    logicalRet = []
+
+
+    for i in queryResult:
+        ret = ret + "<h1>"+i[1].upper() + "&nbsp,&nbsp" + i[0] + "</h1>"
+        if len(i[2]) == 0:
+            ret = ret + "not exist"
+        else:
+            ret = ret + '<table style="width:100%"<tr><th>Filename</th><th>Line Num</th><th>Inline offset</th></tr>'
+            for pos in i[2]:
+                filename, start, line, offset = pos.split('_')
+                realLine = int(line) + int(aggregateDic[start])
+                ret = ret + '<tr><th>' + filename + "</th><th>" +str(realLine) + "</th><th>" + offset+"</th></tr>"
+            ret = ret + '</table>'
+
+    for i in queryResult:
+        if len(i[2]) == 0:
+            ret = ret + " logical not exist"
+            return ret
+        else:
+            if i[1].upper() == "AND":
+                logicalRet = andList(logicalRet, i[2])
+            elif i[1].upper() == "OR":
+                logicalRet = orList(logicalRet, i[2])
+            elif i[1].upper() == "NOT":
+                logicalRet = notList(logicalRet, i[2])
+
+    ret = ret + "<h1>Logical Result</h1>"
+    ret = ret + '<table style="width:100%"<tr><th>Filename</th><th>Line Num</th><th>Inline offset</th></tr>'
+    for pos in logicalRet:
+        filename, start, line, offset = pos.split('_')
+        realLine = int(line) + int(aggregateDic[start])
+        ret = ret + '<tr><th>' + filename + "</th><th>" +str(realLine) + "</th><th>" + offset+"</th></tr>"
+    ret = ret + '</table>'
     return ret
