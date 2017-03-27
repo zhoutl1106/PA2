@@ -5,7 +5,7 @@ In PA2, we pick five production of William Shakespeare， which are:
   The Merchant of Venice : pg2243.txt
   The Tragedie of Hamlet : pg2265.txt
 
-  We convert all words to lower case and use regular express to keep ONLY a-z characters
+  We convert all words to lower case and use regular express to keep ONLY a-z characters, so you'l will be convert to youl
   We make all the outputs 1-indexed and please make sure out0.txt, out1.txt is located in
   the same folder for step 3, 4.
 
