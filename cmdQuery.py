@@ -2,7 +2,7 @@ from process import grabAWord
 import sys
 import ast
 
-word = sys.argv[1]
+word = sys.argv[1].lower()
 aggregateDic = {}
 
 file = open('./out1.txt','rt')

@@ -49,6 +49,7 @@ def process(word):
     stopList = filestop.readline().strip().split()
     line = ""
     ret = ""
+    word = word.lower();
 
     # check if querying stop word
     allquery = word.split('+')
