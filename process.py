@@ -6,6 +6,7 @@ file = open('./out1.txt','rt')
 def grabAWord(word):
     file.seek(0)
     ret = []
+    # read in each line to find querying word
     while True:
         line = file.readline().strip();
         if line == "***":
@@ -16,24 +17,29 @@ def grabAWord(word):
                 return tempList[1]
 
 def grabConsecutiveWords(words):
+    # remove the leading logical and/or/not
     words.pop(0)
-    print("consecutive " , words)
     listOfPoss = []
+    # query each word in word group
     for word in words:
         l = grabAWord(word)
         if len(l) == 0:
             return []
         listOfPoss.append(grabAWord(word))
     ret = []
+
+    # assume the first element must be contained
     for e in listOfPoss[0]:
         filename, start, line, offset = e.split('_')
         offset = int(offset)
         isConsecutive = True
+        # check all the other words are consecutive
         for i in range(1, len(listOfPoss)):
             tempP = filename + "_"+start + "_"+line + "_" + str(offset + i)
             if tempP not in listOfPoss[i]:
                 isConsecutive = False
                 break
+        # if survived for all check, add it to return value
         if isConsecutive:
             ret.append(e)
     return ret

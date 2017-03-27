@@ -15,7 +15,7 @@ if(word in stopList):
     print("Your query contains a stop word : " + word)
     quit()
 
-# build chunk lines dictionary
+# build chunk lines aggregate dictionary
 while True:
     line = file.readline();
     if line.strip() == "***":
