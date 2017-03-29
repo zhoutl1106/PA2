@@ -90,8 +90,8 @@ def process(word):
     while i < len(allquery):
         if i == 0:
             temp = ["or"]
-        if (allquery[i] != "and") and (allquery[i] != "not") and (allquery[i] != "or"):
-            temp.append(allquery[i])
+        if (allquery[i].lower() != "and") and (allquery[i].lower() != "not") and (allquery[i].lower() != "or"):
+            temp.append(allquery[i].lower())
         else:
             pairedAllQuery.append(temp)
             temp = [allquery[i]]
@@ -142,7 +142,7 @@ def process(word):
 
 
     for i in queryResult:
-        ret = ret + "<h1>"+i[1].upper() + "&nbsp,&nbsp" + i[0] + "</h1>"
+        ret = ret + "<h1>Single Query Result : " + i[0] + "</h1>"
         if len(i[2]) == 0:
             ret = ret + "not exist"
         else:
@@ -165,7 +165,7 @@ def process(word):
             elif i[1].upper() == "NOT":
                 logicalRet = notList(logicalRet, i[2])
 
-    ret = ret + "<h1>Logical Result</h1>"
+    ret = ret + "<h1>Logical Result : " + word.replace('+',' ') + "</h1>"
     ret = ret + '<table style="width:100%"<tr><th>Filename</th><th>Line Num</th><th>Inline offset</th></tr>'
     for pos in logicalRet:
         filename, start, line, offset = pos.split('_')

@@ -30,7 +30,7 @@ class GetHandler(BaseHTTPRequestHandler):
         if len(word) > 0:
             x(process(word))
         else:
-            x("<h1>Please input query text ( and/or/not are support )</h1>")
+            x("<h1>Please input query text ( and/or/not & word group are support )</h1>")
             x('<form action="/server.py" method=GET>')
             x('<input type="text" name="word"><br/>')
             x('<input type="submit" value="Submit" />')
