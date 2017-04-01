@@ -166,6 +166,10 @@ def process(word):
                 logicalRet = notList(logicalRet, i[2])
 
     ret = ret + "<h1>Logical Result : " + word.replace('+',' ') + "</h1>"
+    if len(logicalRet) == 0:
+        ret = ret + " not exist"
+        return ret
+
     ret = ret + '<table style="width:100%"<tr><th>Filename</th><th>Line Num</th><th>Inline offset</th></tr>'
     for pos in logicalRet:
         filename, start, line, offset = pos.split('_')
